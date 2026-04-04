@@ -6,29 +6,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const documentRoutes = require('./routes/document');
-const authRoutes = require('./routes/auth');
 const setupSocket = require('./socket');
 
 const app = express();
 const server = http.createServer(app);
 
-// CORS Configuration
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'http://localhost:5173',
-  'http://localhost:3000'
-].filter(Boolean);
-
+// CORS - allow all origins
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS']
 };
@@ -47,7 +32,6 @@ app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() 
 
 // API Routes
 app.use('/api/document', documentRoutes);
-app.use('/api/auth', authRoutes);
 
 // Socket.IO setup
 setupSocket(io);
