@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as Y from 'yjs';
-import { useAuth } from './useAuth.jsx';
+import * as Y from 'yjs';
 
 const COLORS = [
   '#e53e3e', '#dd6b20', '#d69e2e', '#38a169',
@@ -13,14 +13,13 @@ function randomColor() {
 
 function getStoredUser() {
   try {
-    const stored = sessionStorage.getItem('collabedit-user');
+    const stored = localStorage.getItem('collabedit-user');
     if (stored) return JSON.parse(stored);
   } catch {}
   return null;
 }
 
 export function useCollaboration({ docId, socket, connected }) {
-  const { user: authUser } = useAuth();
   const ydocRef = useRef(null);
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -36,11 +35,15 @@ export function useCollaboration({ docId, socket, connected }) {
   useEffect(() => {
     if (!socket || !connected || !docId) return;
 
-    // Use authUser if available, otherwise fallback to anonymous
-    const user = authUser || {
-      name: `User-${Math.floor(Math.random() * 9000) + 1000}`,
-      color: '#888888'
-    };
+    // Determine or create user identity
+    let user = getStoredUser();
+    if (!user) {
+      user = {
+        name: `User-${Math.floor(Math.random() * 9000) + 1000}`,
+        color: randomColor()
+      };
+      localStorage.setItem('collabedit-user', JSON.stringify(user));
+    }
     
     setCurrentUser({ ...user, id: socket.id });
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth.jsx';
 import { useSocket } from '../hooks/useSocket.js';
 import { useCollaboration } from '../hooks/useCollaboration.js';
 import CollabEditor from '../components/CollabEditor.jsx';
@@ -30,7 +29,6 @@ function HomeIcon() {
 export default function EditorPage({ darkMode, setDarkMode }) {
   const { id: docId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { socket, connected } = useSocket();
   const {
     ydoc, users, currentUser, docTitle, lastSaved,
@@ -138,14 +136,6 @@ export default function EditorPage({ darkMode, setDarkMode }) {
           </button>
 
           <div className="w-px h-5 mx-1" style={{ background: 'var(--border)' }} />
-
-          {user ? (
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border border-border" style={{ background: user.color, color: 'white' }} title={user.name}>
-              {user.name.charAt(0).toUpperCase()}
-            </div>
-          ) : (
-            <Link to="/login" className="text-xs font-bold px-2 py-1 hover:opacity-70 transition-opacity">Login</Link>
-          )}
 
           <button
             onClick={() => setDarkMode(!darkMode)}

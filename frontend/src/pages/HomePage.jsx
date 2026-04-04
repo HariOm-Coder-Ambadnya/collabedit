@@ -22,12 +22,32 @@ function SunIcon() {
 
 export default function HomePage({ darkMode, setDarkMode }) {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const [userName, setUserName] = useState(() => {
+    const saved = localStorage.getItem('collabedit-user');
+    if (saved) return JSON.parse(saved).name;
+    return '';
+  });
   const [joinId, setJoinId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const saveName = (name) => {
+    const n = name.trim() || `User-${Math.floor(Math.random() * 9000) + 1000}`;
+    setUserName(n);
+    const existing = JSON.parse(localStorage.getItem('collabedit-user') || '{}');
+    const newUser = {
+      ...existing,
+      name: n,
+      color: existing.color || '#3182ce' // Default color if not set
+    };
+    localStorage.setItem('collabedit-user', JSON.stringify(newUser));
+  };
+
   const createDocument = async () => {
+    if (!userName.trim()) {
+      setError('Please set your name first!');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -47,9 +67,12 @@ export default function HomePage({ darkMode, setDarkMode }) {
 
   const joinDocument = (e) => {
     e.preventDefault();
+    if (!userName.trim()) {
+      setError('Please set your name first!');
+      return;
+    }
     const id = joinId.trim();
     if (!id) return;
-    // Support full URLs or just IDs
     const docId = id.includes('/doc/') ? id.split('/doc/')[1] : id;
     navigate(`/doc/${docId}`);
   };
@@ -66,32 +89,6 @@ export default function HomePage({ darkMode, setDarkMode }) {
         </div>
         
         <div className="flex items-center gap-4">
-          {user ? (
-            <div className="flex items-center gap-3 bg-surface-2 px-3 py-1.5 rounded-xl border border-border">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: user.color, color: 'white' }}>
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <span className="text-sm font-medium">{user.name}</span>
-              <button 
-                onClick={logout}
-                className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors ml-2"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link to="/login" className="text-sm font-semibold px-4 py-2 hover:opacity-70 transition-opacity">Login</Link>
-              <Link 
-                to="/signup" 
-                className="text-sm font-semibold px-4 py-2 rounded-xl transition-all hover:opacity-90"
-                style={{ background: 'var(--text)', color: 'var(--bg)' }}
-              >
-                Sign Up
-              </Link>
-            </div>
-          )}
-          
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2 rounded-lg transition-colors"
@@ -123,8 +120,29 @@ export default function HomePage({ darkMode, setDarkMode }) {
             Create a document and share the link. Anyone with it can join and edit simultaneously — no conflicts, no friction.
           </p>
 
+          {/* Name Setup */}
+          <div className="mb-10 p-5 rounded-2xl animate-fade-in" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <label className="block text-xs font-bold mb-2 uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+              Identify yourself
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={userName}
+                onChange={e => saveName(e.target.value)}
+                placeholder="Enter your name..."
+                className="flex-1 px-4 py-3 rounded-xl text-base outline-none transition-all focus:ring-2 focus:ring-accent/20"
+                style={{
+                  background: 'var(--surface-2)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text)'
+                }}
+              />
+            </div>
+          </div>
+
           {/* Actions */}
-          <div className="flex flex-col gap-4">
+          <div className={`flex flex-col gap-4 transition-opacity ${!userName.trim() ? 'opacity-40 pointer-events-none' : ''}`}>
             <button
               onClick={createDocument}
               disabled={loading}
@@ -146,7 +164,7 @@ export default function HomePage({ darkMode, setDarkMode }) {
                 value={joinId}
                 onChange={e => setJoinId(e.target.value)}
                 placeholder="Paste document ID or URL..."
-                className="flex-1 px-4 py-3 rounded-xl text-sm outline-none transition-colors"
+                className="flex-1 px-4 py-3 rounded-xl text-sm outline-none transition-colors transition-all focus:ring-2 focus:ring-accent/20"
                 style={{
                   background: 'var(--surface)',
                   border: '1px solid var(--border)',
@@ -163,7 +181,7 @@ export default function HomePage({ darkMode, setDarkMode }) {
             </form>
 
             {error && (
-              <p className="text-center text-sm text-red-500 animate-fade-in">{error}</p>
+              <p className="text-center text-sm text-red-500 animate-fade-in mt-2 font-medium">{error}</p>
             )}
           </div>
         </div>

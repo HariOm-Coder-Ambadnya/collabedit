@@ -6,7 +6,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const documentRoutes = require('./routes/document');
-const authRoutes = require('./routes/auth');
 const setupSocket = require('./socket');
 
 const app = express();
@@ -47,7 +46,6 @@ app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() 
 
 // API Routes
 app.use('/api/document', documentRoutes);
-app.use('/api/auth', authRoutes);
 
 // Socket.IO setup
 setupSocket(io);

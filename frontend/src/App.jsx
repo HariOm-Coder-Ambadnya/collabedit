@@ -3,9 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
 import EditorPage from './pages/EditorPage.jsx';
 
-import { AuthProvider } from './hooks/useAuth.jsx';
-import AuthPage from './pages/AuthPage.jsx';
-
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('collabedit-dark');
@@ -19,17 +16,13 @@ function App() {
   }, [darkMode]);
 
   return (
-    <AuthProvider>
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Routes>
-          <Route path="/" element={<HomePage darkMode={darkMode} setDarkMode={setDarkMode} />} />
-          <Route path="/login" element={<AuthPage isLogin={true} />} />
-          <Route path="/signup" element={<AuthPage isLogin={false} />} />
-          <Route path="/doc/:id" element={<EditorPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <Routes>
+        <Route path="/" element={<HomePage darkMode={darkMode} setDarkMode={setDarkMode} />} />
+        <Route path="/doc/:id" element={<EditorPage darkMode={darkMode} setDarkMode={setDarkMode} />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
