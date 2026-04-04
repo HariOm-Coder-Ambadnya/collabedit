@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as Y from 'yjs';
-import * as Y from 'yjs';
 
 const COLORS = [
   '#e53e3e', '#dd6b20', '#d69e2e', '#38a169',
