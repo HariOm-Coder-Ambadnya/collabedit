@@ -6,14 +6,29 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const documentRoutes = require('./routes/document');
+const authRoutes = require('./routes/auth');
 const setupSocket = require('./socket');
 
 const app = express();
 const server = http.createServer(app);
 
-// CORS - allow all origins
+// CORS Configuration
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000'
+].filter(Boolean);
+
 const corsOptions = {
-  origin: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      console.warn('[cors] Origin blocked:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS']
 };
@@ -32,6 +47,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() 
 
 // API Routes
 app.use('/api/document', documentRoutes);
+app.use('/api/auth', authRoutes);
 
 // Socket.IO setup
 setupSocket(io);
@@ -45,7 +61,8 @@ mongoose
     console.log('[db] MongoDB connected:', MONGODB_URI);
     const PORT = process.env.PORT || 4000;
     server.listen(PORT, () => {
-      console.log(`[server] CollabEdit backend running on http://localhost:${PORT}`);
+      console.log(`[server] Backend running on port ${PORT}`);
+      console.log(`[server] Allowed Origins:`, allowedOrigins);
     });
   })
   .catch(err => {
