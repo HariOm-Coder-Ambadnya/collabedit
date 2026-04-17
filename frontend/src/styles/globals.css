@@ -192,5 +192,45 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+
 .animate-fade-in { animation: fadeIn 0.3s ease-out; }
 .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Print Optimization */
+@media print {
+  /* Hide everything except the editor */
+  header, 
+  nav, 
+  .toolbar, 
+  .user-presence, 
+  .revision-history, 
+  button, 
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .editor-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .tiptap-editor {
+    min-height: auto !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Reset dark mode for printing */
+  :root, .dark {
+    --bg: #ffffff;
+    --text: #000000;
+  }
+}

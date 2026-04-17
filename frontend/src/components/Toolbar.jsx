@@ -209,6 +209,18 @@ export default function Toolbar({ editor, onSaveRevision }) {
           </svg>
           .HTML
         </button>
+
+        <button
+          onClick={() => window.print()}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+          style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+          title="Print to PDF"
+        >
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 002 2v4a2 2 0 002 2h2m6 4H7a2 2 0 01-2-2v-4h14v4a2 2 0 01-2 2zM9 9V5a2 2 0 012-2h2a2 2 0 012 2v4M7 13h10" />
+          </svg>
+          .PDF
+        </button>
       </div>
 
       <Divider />
