@@ -154,18 +154,77 @@ export default function Toolbar({ editor, onSaveRevision }) {
 
       <div className="flex-1" />
 
+      {/* Export Options */}
+      <div className="flex items-center gap-1 ml-2">
+        <button
+          onClick={() => {
+            const text = editor.getText();
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `document-${new Date().getTime()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+          style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+          title="Download as Plain Text"
+        >
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          .TXT
+        </button>
+
+        <button
+          onClick={() => {
+            const html = editor.getHTML();
+            const styledHtml = `
+              <html>
+                <head>
+                  <style>
+                    body { font-family: sans-serif; line-height: 1.6; padding: 40px; color: #333; }
+                    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+                    blockquote { border-left: 4px solid #ccc; padding-left: 15px; color: #666; }
+                  </style>
+                </head>
+                <body>${html}</body>
+              </html>
+            `;
+            const blob = new Blob([styledHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `document-${new Date().getTime()}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
+          style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+          title="Download as HTML"
+        >
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+          </svg>
+          .HTML
+        </button>
+      </div>
+
+      <Divider />
+
       {/* Save revision */}
       {onSaveRevision && (
         <button
           onMouseDown={(e) => { e.preventDefault(); onSaveRevision(); }}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-80"
-          style={{ background: 'var(--surface-2)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}
+          style={{ background: 'var(--accent)', color: 'white', border: 'none', fontWeight: 600 }}
           title="Save a named revision"
         >
           <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
           </svg>
-          Save version
+          Save Version
         </button>
       )}
     </div>
