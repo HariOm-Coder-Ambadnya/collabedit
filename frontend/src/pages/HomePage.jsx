@@ -51,16 +51,36 @@ export default function HomePage({ darkMode, setDarkMode }) {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(getApiUrl('/api/document'), {
+      const apiUrl = getApiUrl('/api/document');
+      console.log('[create] Fetching URL:', apiUrl);
+
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: 'Untitled Document' })
       });
-      if (!res.ok) throw new Error('Failed to create document');
+
+      console.log('[create] Response status:', res.status, '| ok:', res.ok);
+      const contentType = res.headers.get('content-type') || '';
+      console.log('[create] Content-Type:', contentType);
+
+      if (!res.ok) throw new Error(`Failed to create document (HTTP ${res.status})`);
+
+      if (!contentType.includes('application/json')) {
+        throw new Error(
+          `Server returned ${contentType || 'unknown content'} instead of JSON. ` +
+          'VITE_BACKEND_URL may be missing or wrong in Vercel environment variables.'
+        );
+      }
+
       const data = await res.json();
+      console.log('[create] Document created:', data);
+
+      setLoading(false);
       navigate(`/doc/${data.id}`);
     } catch (err) {
-      setError(err.message);
+      console.error('[create] Error:', err);
+      setError(err.message || 'Something went wrong. Check the browser console.');
       setLoading(false);
     }
   };

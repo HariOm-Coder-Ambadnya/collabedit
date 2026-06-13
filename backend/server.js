@@ -12,6 +12,8 @@ const app = express();
 const server = http.createServer(app);
 
 // CORS Configuration
+// CLIENT_URL must be set to your Vercel frontend URL in production:
+// e.g., https://your-app.vercel.app
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'http://localhost:5173',
